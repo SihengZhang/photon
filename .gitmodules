@@ -4,3 +4,6 @@
 [submodule "externals/spdlog"]
 	path = externals/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "externals/embree"]
+	path = externals/embree
+	url = https://github.com/embree/embree.git
