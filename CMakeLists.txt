@@ -3,8 +3,16 @@ project(photon_project)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_subdirectory(externals/embree)
+# Define tinyobjloader as an interface library
+add_library(tinyobjloader STATIC externals/tinyobjloader/tiny_obj_loader.cc)
+target_include_directories(tinyobjloader PUBLIC externals/tinyobjloader)
+
+add_library(spdlog STATIC externals/spdlog/src/spdlog.cpp)
+target_compile_definitions(spdlog PRIVATE SPDLOG_COMPILED_LIB)
+target_include_directories(spdlog PUBLIC externals/spdlog/include)
+
 
 add_executable(photon_project main.cpp)
 
-target_link_libraries(photon_project PRIVATE embree3)
+target_link_libraries(photon_project PRIVATE tinyobjloader)
+target_link_libraries(photon_project PRIVATE spdlog)

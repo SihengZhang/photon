@@ -1,7 +1,9 @@
+#include <spdlog/spdlog.h>
+#include <tiny_obj_loader.h>
 #include <iostream>
 
-int main()
-{
-    std::cout << "Hello, World!" << std::endl;
+int main() {
+    tinyobj::attrib_t attrib;
+    spdlog::info("Hello, world!");
     return 0;
 }
