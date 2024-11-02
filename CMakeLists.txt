@@ -15,7 +15,10 @@ add_library(spdlog STATIC externals/spdlog/src/spdlog.cpp)
 target_compile_definitions(spdlog PRIVATE SPDLOG_COMPILED_LIB)
 target_include_directories(spdlog PUBLIC externals/spdlog/include)
 
-add_executable(photon_project main.cpp)
+find_package(OpenMP REQUIRED)
 
-target_link_libraries(photon_project PRIVATE tinyobjloader)
-target_link_libraries(photon_project PRIVATE spdlog)
+add_executable(photon main.cpp)
+
+target_link_libraries(photon PRIVATE tinyobjloader)
+target_link_libraries(photon PRIVATE spdlog)
+target_link_libraries(photon PRIVATE OpenMP::OpenMP_CXX)
