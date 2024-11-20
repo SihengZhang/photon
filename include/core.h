@@ -1,5 +1,6 @@
-#ifndef _CORE_H
-#define _CORE_H
+#ifndef CORE_H
+#define CORE_H
+
 #include <cmath>
 #include <iostream>
 #include <limits>

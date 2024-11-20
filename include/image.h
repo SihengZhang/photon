@@ -1,37 +1,34 @@
-#ifndef _IMAGE_H
-#define _IMAGE_H
-#include <fstream>
-#include <iostream>
+#ifndef IMAGE_H
+#define IMAGE_H
+
 #include <string>
 #include <vector>
-#include <algorithm>
 #include "core.h"
 
 class Image {
- private:
-  unsigned int width;
-  unsigned int height;
-  std::vector<float> pixels;
 
- private:
-  [[nodiscard]] unsigned int getIndex(unsigned int i, unsigned int j) const {
-    return 3 * j + 3 * width * i;
-  }
+public:
+    Image(unsigned int width, unsigned int height);
 
- public:
-  Image(unsigned int width, unsigned int height);
+    [[nodiscard]] unsigned int getIndex(unsigned int i, unsigned int j) const;
 
-  [[nodiscard]] Vec3f getPixel(unsigned int i, unsigned int j) const;
+    [[nodiscard]] Vec3f getPixel(unsigned int i, unsigned int j) const;
 
-  void addPixel(unsigned int i, unsigned int j, const Vec3f& rgb);
+    void addPixel(unsigned int i, unsigned int j, const Vec3f& rgb);
 
-  void setPixel(unsigned int i, unsigned int j, const Vec3f& rgb);
+    void setPixel(unsigned int i, unsigned int j, const Vec3f& rgb);
 
-  void divide(float k);
+    void divide(float k);
 
-  void gammaCorrection(float gamma);
+    void gammaCorrection(float gamma);
 
-  void writePPM(const std::string& filename) const;
+    void writePPM(const std::string& filename) const;
+
+private:
+
+    unsigned int width;
+    unsigned int height;
+    std::vector<float> pixels;
 };
 
 #endif

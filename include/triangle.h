@@ -1,5 +1,5 @@
-#ifndef _SHAPE_H
-#define _SHAPE_H
+#ifndef TRIANGLE_H
+#define TRIANGLE_H
 #include "core.h"
 #include "sampler.h"
 

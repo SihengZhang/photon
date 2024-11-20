@@ -45,7 +45,8 @@ add_executable(photon main.cpp
         src/camera.cpp
         src/image.cpp
         src/light.cpp
-        src/triangle.cpp)
+        src/triangle.cpp
+        src/sampler.cpp)
 
 target_include_directories(photon PRIVATE ./include)
 

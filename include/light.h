@@ -1,5 +1,5 @@
-#ifndef _LIGHT_H
-#define _LIGHT_H
+#ifndef LIGHT_H
+#define LIGHT_H
 
 #include "core.h"
 #include "sampler.h"

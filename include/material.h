@@ -1,5 +1,5 @@
-#ifndef _MATERIAL_H
-#define _MATERIAL_H
+#ifndef MATERIAL_H
+#define MATERIAL_H
 #include <memory>
 
 #include "core.h"

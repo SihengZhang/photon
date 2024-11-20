@@ -1,5 +1,5 @@
-#ifndef _INTEGRATOR_H
-#define _INTEGRATOR_H
+#ifndef INTEGRATOR_H
+#define INTEGRATOR_H
 #include <omp.h>
 
 #include <optional>
