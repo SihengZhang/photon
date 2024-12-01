@@ -3,6 +3,7 @@
 #include "integrator.h"
 #include "photon_map.h"
 #include "scene.h"
+#include "json.h"
 #include <opencv2/opencv.hpp>
 
 int main() {

@@ -42,6 +42,7 @@ add_executable(photon main.cpp
         include/sampler.h
         include/scene.h
         include/triangle.h
+        include/json.h
         src/camera.cpp
         src/image.cpp
         src/light.cpp
