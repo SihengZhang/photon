@@ -1,8 +1,8 @@
 #include "camera.h"
 
-Camera::Camera(const Vec3f& position, const Vec3f& forward, const float FOV)
+Camera::Camera(const Vec3f& position, const Vec3f& forward, const Vec3f& upward, const float FOV)
         : position(position), forward(forward), FOV(FOV) {
-    right = normalize(cross(forward, Vec3f(0, 1, 0)));
+    right = normalize(cross(forward, upward));
     up = normalize(cross(right, forward));
 
     spdlog::info("[Camera] position: ({}, {}, {})", position[0], position[1],

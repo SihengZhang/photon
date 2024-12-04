@@ -2,6 +2,7 @@
 #define CORE_H
 
 #include <cmath>
+#include <vector>
 #include <iostream>
 #include <limits>
 
@@ -119,8 +120,17 @@ struct Vec3 {
   // implement Point
   static constexpr int dim = 3;
 
-  Vec3() { v[0] = v[1] = v[2] = 0; }
-  Vec3(T x) { v[0] = v[1] = v[2] = x; }
+  Vec3() {
+    v[0] = v[1] = v[2] = 0;
+  }
+  Vec3(T x) {
+    v[0] = v[1] = v[2] = x;
+  }
+  explicit Vec3(std::vector<T> vT) {
+    v[0] = vT[0];
+    v[1] = vT[1];
+    v[2] = vT[2];
+  }
   Vec3(T x, T y, T z) {
     v[0] = x;
     v[1] = y;

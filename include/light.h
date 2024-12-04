@@ -7,13 +7,13 @@
 
 // light interface
 class Light {
- public:
+
+public:
     virtual ~Light() = default;
 
     [[nodiscard]] virtual Vec3f Le(const SurfaceInfo& info, const Vec3f& dir) const = 0;
-  virtual SurfaceInfo samplePoint(Sampler& sampler, float& pdf) const = 0;
-  virtual Vec3f sampleDirection(const SurfaceInfo& surfInfo, Sampler& sampler,
-                                float& pdf) const = 0;
+    virtual SurfaceInfo samplePoint(Sampler& sampler, float& pdf) const = 0;
+    virtual Vec3f sampleDirection(const SurfaceInfo& surfInfo, Sampler& sampler, float& pdf) const = 0;
 };
 
 class AreaLight : public Light {

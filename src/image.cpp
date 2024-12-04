@@ -8,7 +8,7 @@ Image::Image(const unsigned int width, const unsigned int height)
         pixels.resize(3 * width * height);
 }
 
-unsigned int Image::getIndex(unsigned int i, unsigned int j) const {
+unsigned int Image::getIndex(const unsigned int i, const unsigned int j) const {
     return 3 * j + 3 * width * i;
 }
 
@@ -17,14 +17,14 @@ Vec3f Image::getPixel(const unsigned int i, const unsigned int j) const {
     return {pixels[idx], pixels[idx + 1], pixels[idx + 2]};
 }
 
-void Image::addPixel(unsigned int i, unsigned int j, const Vec3f& rgb) {
+void Image::addPixel(const unsigned int i, const unsigned int j, const Vec3f& rgb) {
     const unsigned int idx = getIndex(i, j);
     pixels[idx] += rgb[0];
     pixels[idx + 1] += rgb[1];
     pixels[idx + 2] += rgb[2];
 }
 
-void Image::setPixel(unsigned int i, unsigned int j, const Vec3f& rgb) {
+void Image::setPixel(const unsigned int i, const unsigned int j, const Vec3f& rgb) {
     const unsigned int idx = getIndex(i, j);
     pixels[idx] = rgb[0];
     pixels[idx + 1] = rgb[1];

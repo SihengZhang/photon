@@ -38,8 +38,7 @@ const std::shared_ptr<BxDF> createBxDF(const tinyobj::material_t& material) {
 }
 
 // create AreaLight from tinyobj material
-const std::shared_ptr<AreaLight> createAreaLight(
-    const tinyobj::material_t& material, const Triangle* tri) {
+const std::shared_ptr<AreaLight> createAreaLight(const tinyobj::material_t& material, const Triangle* tri) {
   if (material.emission[0] > 0 || material.emission[1] > 0 ||
       material.emission[2] > 0) {
     const Vec3f le =
@@ -98,6 +97,7 @@ class Scene {
 
  public:
   Scene() {}
+
   ~Scene() {
     clear();
     rtcReleaseScene(scene);
@@ -106,20 +106,20 @@ class Scene {
 
   // load obj file
   // TODO: remove vertex duplication
-  void loadModel(const std::filesystem::path& filepath) {
+  void loadModel(const std::filesystem::path& model_path, const std::filesystem::path& search_path) {
     clear();
 
-    spdlog::info("[Scene] loading: {}", filepath.generic_string());
+    spdlog::info("[Scene] loading: {}", model_path.generic_string());
 
     tinyobj::ObjReaderConfig reader_config;
-    reader_config.mtl_search_path = "D:/photon-project/models";
+    reader_config.mtl_search_path = search_path.generic_string();
     reader_config.triangulate = true;
 
     tinyobj::ObjReader reader;
-    if (!reader.ParseFromFile(filepath.generic_string(), reader_config)) {
+    if (!reader.ParseFromFile(model_path.generic_string(), reader_config)) {
       if (!reader.Error().empty()) {
         spdlog::error("[Scene] failed to load {} : {}",
-                      filepath.generic_string(), reader.Error());
+                      model_path.generic_string(), reader.Error());
       }
       return;
     }

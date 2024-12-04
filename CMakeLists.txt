@@ -47,9 +47,10 @@ add_executable(photon main.cpp
         src/image.cpp
         src/light.cpp
         src/triangle.cpp
-        src/sampler.cpp)
+)
 
 target_include_directories(photon PRIVATE ./include)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(photon PRIVATE tinyobjloader spdlog OpenMP::OpenMP_CXX ${OpenCV_LIBS} embree)
+
