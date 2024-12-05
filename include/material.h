@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "core.h"
+#include "texture.h"
 #include "sampler.h"
 
 enum class BxDFType { DIFFUSE, SPECULAR };
@@ -54,20 +55,23 @@ class BxDF {
 
   // evaluate BxDF
   virtual Vec3f evaluate(const Vec3f& wo, const Vec3f& wi,
-                         const TransportDirection& transport_dir) const = 0;
+                         const TransportDirection& transport_dir,
+                         const SurfaceInfo& surfaceInfo) const = 0;
 
   // sample direction by BxDF.
   // its pdf is propotional to the shape of BxDF
   virtual Vec3f sampleDirection(const Vec3f& wo,
                                 const TransportDirection& transport_dir,
                                 Sampler& sampler, Vec3f& wi,
-                                float& pdf) const = 0;
+                                float& pdf,
+                                const SurfaceInfo& surfaceInfo) const = 0;
 
   // get all samplable direction
   // NOTE: for specular only
   // NOTE: used for drawing fresnel reflection nicely at low number of samples
-  virtual std::vector<DirectionPair> sampleAllDirection(
-      const Vec3f& wo, const TransportDirection& transport_dir) const = 0;
+  virtual std::vector<DirectionPair> sampleAllDirection(const Vec3f& wo,
+                                                        const TransportDirection& transport_dir,
+                                                        const SurfaceInfo& surfaceInfo) const = 0;
 };
 
 class Lambert : public BxDF {
@@ -78,7 +82,8 @@ class Lambert : public BxDF {
   Lambert(const Vec3f& rho) : BxDF(BxDFType::DIFFUSE), rho(rho) {}
 
   Vec3f evaluate(const Vec3f& wo, const Vec3f& wi,
-                 const TransportDirection& transport_dir) const override {
+                 const TransportDirection& transport_dir,
+                 const SurfaceInfo& surfaceInfo) const override {
     // when wo, wi is under the surface, return 0
     const float cosThetaO = cosTheta(wo);
     const float cosThetaI = cosTheta(wi);
@@ -90,15 +95,17 @@ class Lambert : public BxDF {
   Vec3f sampleDirection(const Vec3f& wo,
                         const TransportDirection& transport_dir,
                         Sampler& sampler, Vec3f& wi,
-                        float& pdf) const override {
+                        float& pdf,
+                        const SurfaceInfo& surfaceInfo) const override {
     // cosine weighted hemisphere sampling
     wi = sampleCosineHemisphere(sampler.getNext2D(), pdf);
 
-    return evaluate(wo, wi, transport_dir);
+    return evaluate(wo, wi, transport_dir, surfaceInfo);
   }
 
   std::vector<DirectionPair> sampleAllDirection(
-      const Vec3f& wo, const TransportDirection& transport_dir) const override {
+      const Vec3f& wo, const TransportDirection& transport_dir,
+      const SurfaceInfo& surfaceInfo) const override {
     std::vector<DirectionPair> ret;
     return ret;
   }
@@ -113,14 +120,16 @@ class Mirror : public BxDF {
 
   // NOTE: delta function
   Vec3f evaluate(const Vec3f& wo, const Vec3f& wi,
-                 const TransportDirection& transport_dir) const override {
+                 const TransportDirection& transport_dir,
+                 const SurfaceInfo& surfaceInfo) const override {
     return Vec3f(0);
   }
 
   Vec3f sampleDirection(const Vec3f& wo,
                         const TransportDirection& transport_dir,
                         Sampler& sampler, Vec3f& wi,
-                        float& pdf) const override {
+                        float& pdf,
+                        const SurfaceInfo& surfaceInfo) const override {
     wi = reflect(wo, Vec3f(0, 1, 0));
     pdf = 1.0f;
 
@@ -128,7 +137,8 @@ class Mirror : public BxDF {
   }
 
   std::vector<DirectionPair> sampleAllDirection(
-      const Vec3f& wo, const TransportDirection& transport_dir) const override {
+      const Vec3f& wo, const TransportDirection& transport_dir,
+      const SurfaceInfo& surfaceInfo) const override {
     std::vector<DirectionPair> ret;
     const Vec3f wi = reflect(wo, Vec3f(0, 1, 0));
     ret.emplace_back(wi, rho / absCosTheta(wi));
@@ -150,14 +160,16 @@ class Glass : public BxDF {
 
   // NOTE: delta function
   Vec3f evaluate(const Vec3f& wo, const Vec3f& wi,
-                 const TransportDirection& transport_dir) const override {
+                 const TransportDirection& transport_dir,
+                 const SurfaceInfo& surfaceInfo) const override {
     return Vec3f(0);
   }
 
   Vec3f sampleDirection(const Vec3f& wo,
                         const TransportDirection& transport_dir,
                         Sampler& sampler, Vec3f& wi,
-                        float& pdf) const override {
+                        float& pdf,
+                        const SurfaceInfo& surfaceInfo) const override {
     // set appropriate ior, normal
     float iorO, iorI;
     Vec3f n;
@@ -204,7 +216,8 @@ class Glass : public BxDF {
   }
 
   std::vector<DirectionPair> sampleAllDirection(
-      const Vec3f& wo, const TransportDirection& transport_dir) const override {
+      const Vec3f& wo, const TransportDirection& transport_dir,
+      const SurfaceInfo& surfaceInfo) const override {
     std::vector<DirectionPair> ret;
 
     // set appropriate ior, normal
@@ -242,6 +255,48 @@ class Glass : public BxDF {
 
     return ret;
   }
+};
+class TexturedLambert : public BxDF {
+private:
+  std::shared_ptr<Texture> albedoMap;
+  Vec3f baseColor;  // Add base color to multiply with texture
+
+public:
+  TexturedLambert(const std::shared_ptr<Texture>& tex, const Vec3f& color = Vec3f(1.0f))
+      : BxDF(BxDFType::DIFFUSE), albedoMap(tex), baseColor(color) {}
+
+  Vec3f evaluate(const Vec3f& wo, const Vec3f& wi,
+                const TransportDirection& transport_dir,
+                const SurfaceInfo& surfaceInfo) const override {
+    // When wo or wi is below the surface, return 0
+    const float cosThetaO = cosTheta(wo);
+    const float cosThetaI = cosTheta(wi);
+    if (cosThetaO < 0 || cosThetaI < 0) return Vec3f(0);
+
+    // Get texture color using UV coordinates and multiply with base color
+    Vec3f textureColor = albedoMap ? albedoMap->sample(surfaceInfo.texcoords) : Vec3f(1.0f);
+    return (textureColor * baseColor) / PI;
+  }
+
+  Vec3f sampleDirection(const Vec3f& wo,
+                       const TransportDirection& transport_dir,
+                       Sampler& sampler, Vec3f& wi,
+                       float& pdf,
+                       const SurfaceInfo& surfaceInfo) const override {
+    // Cosine-weighted hemisphere sampling
+    wi = sampleCosineHemisphere(sampler.getNext2D(), pdf);
+    return evaluate(wo, wi, transport_dir, surfaceInfo);
+  }
+
+  std::vector<DirectionPair> sampleAllDirection(
+      const Vec3f& wo, const TransportDirection& transport_dir,
+      const SurfaceInfo& surfaceInfo) const override {
+    return {};  // Empty for Lambertian surfaces
+  }
+
+  // Add methods to modify properties
+  void setBaseColor(const Vec3f& color) { baseColor = color; }
+  Vec3f getBaseColor() const { return baseColor; }
 };
 
 #endif

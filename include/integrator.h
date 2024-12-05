@@ -415,12 +415,12 @@ class PhotonMapping : public Integrator {
       // whener hitting diffuse surface, add photon to the photon array
       // recursively tracing photon with russian roulette
       for (int k = 0; k < maxDepth; ++k) {
-        if (std::isnan(throughput[0]) || std::isnan(throughput[1]) ||
-            std::isnan(throughput[2])) {
+
+        if (std::isnan(throughput[0]) || std::isnan(throughput[1]) || std::isnan(throughput[2])) {
           spdlog::error("[PhotonMapping] photon throughput is NaN");
           break;
-        } else if (throughput[0] < 0 || throughput[1] < 0 ||
-                   throughput[2] < 0) {
+        }
+        if (throughput[0] < 0 || throughput[1] < 0 || throughput[2] < 0) {
           spdlog::error("[PhotonMapping] photon throughput is minus");
           break;
         }
@@ -430,10 +430,9 @@ class PhotonMapping : public Integrator {
           const BxDFType bxdf_type = info.hitPrimitive->getBxDFType();
           if (bxdf_type == BxDFType::DIFFUSE) {
             // TODO: remove lock to get more speed
-#pragma omp critical
+            #pragma omp critical
             {
-              photons.emplace_back(throughput, info.surfaceInfo.position,
-                                   -ray.direction);
+              photons.emplace_back(throughput, info.surfaceInfo.position, -ray.direction);
             }
           }
 
@@ -478,9 +477,8 @@ class PhotonMapping : public Integrator {
       photons.clear();
 
       // photon tracing
-      spdlog::info(
-          "[PhotonMapping] tracing photons to build caustics photon map");
-#pragma omp parallel for
+      spdlog::info("[PhotonMapping] tracing photons to build caustics photon map");
+      #pragma omp parallel for
       for (int i = 0; i < nPhotonsCaustics; ++i) {
         auto& sampler_per_thread = *samplers[omp_get_thread_num()];
 

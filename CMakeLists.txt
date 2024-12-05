@@ -47,6 +47,7 @@ add_executable(photon main.cpp
         src/image.cpp
         src/light.cpp
         src/triangle.cpp
+        include/texture.h
 )
 
 target_include_directories(photon PRIVATE ./include)

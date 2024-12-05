@@ -19,10 +19,25 @@ const std::shared_ptr<BxDF> createDefaultBxDF() {
 
 // create BxDF from tinyobj material
 const std::shared_ptr<BxDF> createBxDF(const tinyobj::material_t& material) {
-  const Vec3f kd =
-      Vec3f(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
-  const Vec3f ks =
-      Vec3f(material.specular[0], material.specular[1], material.specular[2]);
+
+  if (!material.diffuse_texname.empty()) {
+    std::string texpath = material.diffuse_texname;
+    spdlog::info("[Material] Loading texture from: {}", texpath);
+
+    try {
+      auto texture = std::make_shared<Texture>(texpath);
+      spdlog::info("[Material] Successfully created TexturedLambert with texture");
+      return std::make_shared<TexturedLambert>(texture);
+    } catch (const std::exception& e) {
+      //spdlog::error("[Material] Failed to load texture {}: {}", texpath, e.what());
+      // Fallback to Lambert with diffuse color
+      return std::make_shared<Lambert>(Vec3f(material.diffuse[0],
+                                          material.diffuse[1],
+                                          material.diffuse[2]));
+    }
+  }
+  const Vec3f kd = Vec3f(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+  const Vec3f ks = Vec3f(material.specular[0], material.specular[1], material.specular[2]);
 
   switch (material.illum) {
     case 5:
