@@ -1,7 +1,7 @@
 {
   "width": 512,
   "height": 512,
-  "n_samples": 64,
+  "n_samples": 4096,
   "n_photons": 100000,
   "n_estimation_global": 100,
   "n_photons_caustics_multiplier": 10.0,
@@ -14,7 +14,7 @@
     "upward": [0, 1, 0],
     "FOV": 0.8
   },
-  "model_path": "D:/photon-project/input/randomCornellBox.obj",
+  "model_path": "D:/photon-project/input/CornellBox.obj",
   "search_dir": "D:/photon-project/input/",
   "output_dir": "D:/photon-project/output/"
 }

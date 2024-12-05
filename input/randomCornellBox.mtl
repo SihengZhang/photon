@@ -30,7 +30,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd D:\photon-project\input\b5sefa2c.png
+map_Kd texture.png
 
 newmtl floor
 Ns 10.000005

@@ -90,12 +90,16 @@ int main(int argc, char* argv[]) {
     scene.loadModel(model_path, search_dir);
     scene.build();
 
+    UniformSampler sampler;
+
     // photon tracing and build photon map
-    PhotonMapping integrator(n_photons, n_estimation_global,
+    PhotonMapping photon_mapping_integrator(n_photons, n_estimation_global,
                            n_photons_caustics_multiplier, n_estimation_caustics,
                            final_gathering_depth, max_depth);
-    UniformSampler sampler;
-    integrator.build(scene, sampler);
+    photon_mapping_integrator.build(scene, sampler);
+
+    PathTracing path_tracing_integrator(max_depth);
+    path_tracing_integrator.build(scene, sampler);
 
     spdlog::info("[main] tracing rays from camera");
 
@@ -128,7 +132,7 @@ int main(int argc, char* argv[]) {
 
                     if (camera.sampleRay(Vec2f(u, v), ray, pdf)) {
 
-                        const Vec3f radiance = integrator.integrate(ray, scene, sampler) / pdf;
+                        const Vec3f radiance = path_tracing_integrator.integrate(ray, scene, sampler) / pdf;
 
                         if (std::isnan(radiance[0]) || std::isnan(radiance[1]) || std::isnan(radiance[2])) {
                             spdlog::error("radiance is NaN");

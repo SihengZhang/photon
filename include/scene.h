@@ -18,10 +18,10 @@ const std::shared_ptr<BxDF> createDefaultBxDF() {
 }
 
 // create BxDF from tinyobj material
-const std::shared_ptr<BxDF> createBxDF(const tinyobj::material_t& material) {
+const std::shared_ptr<BxDF> createBxDF(const tinyobj::material_t& material, const std::filesystem::path& search_path) {
 
   if (!material.diffuse_texname.empty()) {
-    std::string texpath = material.diffuse_texname;
+    std::string texpath = search_path.generic_string() + material.diffuse_texname;
     spdlog::info("[Material] Loading texture from: {}", texpath);
 
     try {
@@ -253,7 +253,7 @@ class Scene {
       const auto material = this->materials[faceID];
       if (material) {
         const tinyobj::material_t& m = material.value();
-        this->bxdfs.push_back(createBxDF(m));
+        this->bxdfs.push_back(createBxDF(m, search_path));
       }
       // default material
       else {
